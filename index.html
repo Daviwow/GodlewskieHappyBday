@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Fullscreen</title>
+    <style>
+        /* Rende il video a schermo intero e lo centra */
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+        }
+
+        video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover; /* Scala il video per adattarsi allo schermo */
+        }
+    </style>
+</head>
+<body>
+    <!-- Video senza controlli, avviato in automatico e silenziato (per garantire l'autoplay su mobile) -->
+    <video id="fullscreen-video" autoplay muted playsinline>
+        <source src="godlewskie.mp4" type="video/mp4">
+        Il tuo browser non supporta il video HTML5.
+    </video>
+
+    <script>
+        // Imposta la modalità full-screen quando la pagina è caricata su mobile
+        document.addEventListener('DOMContentLoaded', () => {
+            const videoElement = document.getElementById('fullscreen-video');
+
+            // Tentativo di attivare il full-screen quando possibile
+            function requestFullscreen() {
+                if (videoElement.requestFullscreen) {
+                    videoElement.requestFullscreen();
+                } else if (videoElement.webkitRequestFullscreen) { // Safari
+                    videoElement.webkitRequestFullscreen();
+                } else if (videoElement.msRequestFullscreen) { // IE/Edge
+                    videoElement.msRequestFullscreen();
+                }
+            }
+
+            // Avvio full-screen su interazione dell'utente (richiesto su alcuni browser mobile)
+            videoElement.addEventListener('click', requestFullscreen);
+
+            // Avvio automatico del video in alcuni browser su mobile
+            videoElement.play().catch((error) => {
+                console.warn("L'avvio automatico è stato bloccato:", error);
+                // Tentativo di richiedere il full-screen per attivare la riproduzione
+                videoElement.addEventListener('click', () => {
+                    videoElement.play();
+                    requestFullscreen();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
