@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Fullscreen</title>
+    <title>Video Fullscreen con Audio</title>
     <style>
         /* Rende il video a schermo intero e lo centra */
         html, body {
@@ -22,43 +22,74 @@
             height: 100vh;
             object-fit: cover; /* Scala il video per adattarsi allo schermo */
         }
+
+        /* Pulsante overlay per richiedere il primo click */
+        #play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px 40px;
+            font-size: 18px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        #play-button.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <!-- Video senza controlli, avviato in automatico e silenziato (per garantire l'autoplay su mobile) -->
-    <video id="fullscreen-video" autoplay muted playsinline>
+    <!-- Pulsante per avviare il video e attivare il full-screen -->
+    <button id="play-button">Avvia Video</button>
+
+    <!-- Video senza controlli -->
+    <video id="fullscreen-video" playsinline>
         <source src="godlewskie.mp4" type="video/mp4">
         Il tuo browser non supporta il video HTML5.
     </video>
 
     <script>
-        // Imposta la modalità full-screen quando la pagina è caricata su mobile
-        document.addEventListener('DOMContentLoaded', () => {
-            const videoElement = document.getElementById('fullscreen-video');
+        // Elementi HTML
+        const playButton = document.getElementById('play-button');
+        const videoElement = document.getElementById('fullscreen-video');
 
-            // Tentativo di attivare il full-screen quando possibile
-            function requestFullscreen() {
-                if (videoElement.requestFullscreen) {
-                    videoElement.requestFullscreen();
-                } else if (videoElement.webkitRequestFullscreen) { // Safari
-                    videoElement.webkitRequestFullscreen();
-                } else if (videoElement.msRequestFullscreen) { // IE/Edge
-                    videoElement.msRequestFullscreen();
-                }
+        // Funzione per attivare il full-screen
+        function requestFullscreen() {
+            if (videoElement.requestFullscreen) {
+                videoElement.requestFullscreen();
+            } else if (videoElement.webkitRequestFullscreen) { // Safari
+                videoElement.webkitRequestFullscreen();
+            } else if (videoElement.msRequestFullscreen) { // IE/Edge
+                videoElement.msRequestFullscreen();
             }
+        }
 
-            // Avvio full-screen su interazione dell'utente (richiesto su alcuni browser mobile)
-            videoElement.addEventListener('click', requestFullscreen);
-
-            // Avvio automatico del video in alcuni browser su mobile
-            videoElement.play().catch((error) => {
-                console.warn("L'avvio automatico è stato bloccato:", error);
-                // Tentativo di richiedere il full-screen per attivare la riproduzione
-                videoElement.addEventListener('click', () => {
-                    videoElement.play();
-                    requestFullscreen();
-                });
+        // Funzione per avviare il video con audio
+        function playVideoWithAudio() {
+            videoElement.play().then(() => {
+                // Nascondi il pulsante una volta avviato il video
+                playButton.classList.add('hidden');
+                // Richiedi il full-screen
+                requestFullscreen();
+            }).catch((error) => {
+                console.error("Errore nell'avvio del video:", error);
             });
+        }
+
+        // Al clic sul pulsante, avvia il video e richiedi il full-screen
+        playButton.addEventListener('click', () => {
+            playVideoWithAudio();
+        });
+
+        // In alcuni browser, è possibile che il video perda il full-screen: lo ripristiniamo
+        videoElement.addEventListener('ended', () => {
+            playButton.classList.remove('hidden'); // Mostra il pulsante alla fine del video
         });
     </script>
 </body>
