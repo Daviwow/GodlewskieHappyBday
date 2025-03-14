@@ -3,30 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Autoplay</title>
+    <title>Video Fullscreen</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        video {
-            position: absolute;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-        }
+        * { margin: 0; padding: 0; overflow: hidden; }
+        video { width: 100vw; height: 100vh; object-fit: cover; }
     </style>
 </head>
 <body>
     <video id="video" autoplay playsinline>
-        <source src="robertaglielmi.mov" type="video/mp4">
+        <source src="roberta.mov" type="video/mp4">
         Il tuo browser non supporta il tag video.
     </video>
+    
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let video = document.getElementById("video");
-            video.requestFullscreen().catch(err => console.log("Fullscreen non supportato", err));
+            video.play();
+            
+            video.requestFullscreen = video.requestFullscreen || video.mozRequestFullScreen || video.webkitRequestFullscreen || video.msRequestFullscreen;
+            if (video.requestFullscreen) {
+                video.requestFullscreen();
+            }
         });
     </script>
 </body>
